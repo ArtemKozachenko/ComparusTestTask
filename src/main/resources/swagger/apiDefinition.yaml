@@ -1,0 +1,62 @@
+swagger: "2.0"
+info:
+  description: Test task project, a service for aggregating users data from multiple databases
+  title : Multiple databases test task
+  version: 1.0.0
+basePath: "/v1"
+paths:
+  "/users":
+    get:
+      tags:
+        - Users details
+      summary: "API to get all users"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: "Successful users details request return"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/UserDTO"
+        404:
+          description: "User Not Found"
+          schema:
+            $ref: "#/definitions/ErrorResponseData"
+        500:
+          description: "Internal Server Exception Occurred"
+          schema:
+            $ref: "#/definitions/ErrorResponseData"
+      operationId: findUsers
+      parameters:
+        - in: query
+          name: name
+          type: string
+          required: false
+          description: "filtering by user name"
+      x-auth-type: "Application & Application User"
+      x-throttling-tier: unlimited
+
+definitions:
+  UserDTO:
+    properties:
+      id:
+        description: user id
+        type: string
+      username:
+        description: user login
+        type: string
+      name:
+        description: user name
+        type: string
+      surname:
+        description: user surname
+        type: string
+  ErrorResponseData:
+    properties:
+      errorDescription:
+        description: Error Description
+        type: string
+      errorCode:
+        description: Error Code
+        type: string

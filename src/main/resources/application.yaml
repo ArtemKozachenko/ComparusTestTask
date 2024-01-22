@@ -1,0 +1,32 @@
+datasources:
+  - name: data-base-1
+    url: jdbc:h2:~/data-base-1
+    table: users
+    user: sa
+    password: sa
+    mapping:
+      id: user_id
+      username: login
+      name: first_name
+      surname: last_name
+  - name: data-base-2
+    url: jdbc:h2:~/data-base-2
+    table: user_table
+    user: sa
+    password: sa
+    mapping:
+      id: id
+      username: ldap_login
+      name: name
+      surname: surname
+
+spring:
+  jpa:
+    hibernate:
+      hbm2ddl:
+        auto: none
+      show_sql: true
+
+logging:
+  level:
+    root: INFO
