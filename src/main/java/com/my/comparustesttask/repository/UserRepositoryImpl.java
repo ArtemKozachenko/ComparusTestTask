@@ -17,8 +17,7 @@ public class UserRepositoryImpl implements UserRepository {
     private final String tableName;
     private final String entityManagerFactoryBeanName;
 
-    private static final String FIND_ALL_QUERY = "SELECT %s as id, %s as username, %s as name, %s as surname FROM %s";
-    private static final String FIND_BY_NAME = "SELECT %s as id, %s as username, %s as name, %s as surname FROM %s WHERE %s = ?";
+    private static final String SELECT_ALL_FROM_QUERY = "SELECT %s as id, %s as username, %s as name, %s as surname FROM %s";
 
     public UserRepositoryImpl(DataSourceProperties.ColumnsMapping mapping, String tableName, String entityManagerFactoryBeanName) {
         this.mapping = mapping;
@@ -35,21 +34,23 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> findAll() {
-        return entityManager.createNativeQuery(getMappedFindAllQuery(), User.class).getResultList();
+        return entityManager.createNativeQuery(getMappedSelectAllQuery(), User.class).getResultList();
     }
 
     @Override
     public List<User> findByName(String name) {
-        return entityManager.createNativeQuery(getMappedFindByNameQuery(), User.class)
+        return entityManager.createNativeQuery(getMappedWhereColumnIsQuery(mapping.getName()), User.class)
                 .setParameter(1, name).getResultList();
     }
 
-    private String getMappedFindAllQuery() {
-        return String.format(FIND_ALL_QUERY, mapping.getId(), mapping.getUsername(), mapping.getName(), mapping.getSurname(), tableName);
+    private String getMappedWhereColumnIsQuery(String columnName) {
+        StringBuilder builder = new StringBuilder(getMappedSelectAllQuery());
+        builder.append(" ").append("WHERE").append(" ").append(columnName).append("=?");
+        return builder.toString();
     }
 
-    private String getMappedFindByNameQuery() {
-        return String.format(FIND_BY_NAME, mapping.getId(), mapping.getUsername(), mapping.getName(), mapping.getSurname(), tableName, mapping.getName());
+    private String getMappedSelectAllQuery() {
+        return String.format(SELECT_ALL_FROM_QUERY, mapping.getId(), mapping.getUsername(), mapping.getName(), mapping.getSurname(), tableName);
     }
 
 }

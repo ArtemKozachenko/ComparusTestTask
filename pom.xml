@@ -94,12 +94,7 @@
                             <language>spring</language>
                             <configOptions>
                                 <dateLibrary>java17</dateLibrary>
-                                <!--<library>spring-boot</library>-->
                                 <useBeanValidation>false</useBeanValidation>
-                                <!--<useSpringBoot3>true</useSpringBoot3>-->
-                                <!--<openApiNullable>false</openApiNullable>-->
-                                <!--<hideGenerationTimestamp>true</hideGenerationTimestamp>-->
-                                <!--<oas3>true</oas3>-->
                                 <interfaceOnly>true</interfaceOnly>
                             </configOptions>
                             <modelPackage>com.my.comparustesttask.dto</modelPackage>
