@@ -1,0 +1,35 @@
+
+datasources:
+  - name: data-base-1
+    url: ${DB_URL}
+    table: users
+    user: sa
+    password: sa
+    mapping:
+      id: user_id
+      username: login
+      name: first_name
+      surname: last_name
+  - name: data-base-2
+    url: ${DB2_URL}
+    table: user_data
+    user: sa
+    password: sa
+    mapping:
+      id: id
+      username: ldap_login
+      name: name
+      surname: surname
+
+spring:
+  jpa:
+    hibernate:
+      hbm2ddl:
+        auto: none
+      show_sql: true
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+
+logging:
+  level:
+    root: INFO
