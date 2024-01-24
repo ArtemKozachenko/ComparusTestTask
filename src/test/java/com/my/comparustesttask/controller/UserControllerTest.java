@@ -1,7 +1,9 @@
-package com.my.comparustesttask;
+package com.my.comparustesttask.controller;
 
+import com.my.comparustesttask.PostgreDB1ContainerBase;
+import com.my.comparustesttask.PostgreDB2ContainerBase;
 import com.my.comparustesttask.dto.ErrorResponseData;
-import com.my.comparustesttask.entity.User;
+import com.my.comparustesttask.dto.UserDTO;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.ClassRule;
@@ -22,37 +24,26 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasSize;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ComparusTestTaskApplicationTests {
+class UserControllerTest {
 
     @LocalServerPort
     private Integer port;
 
     @ClassRule
-    public static PostgreSQLContainer postgres = (PostgreSQLContainer) new PostgreSQLContainer("postgres:11.1")
-            .withDatabaseName("data-base-1")
-            .withUsername("sa")
-            .withPassword("sa")
-            .withInitScript("dbscripts/create_and_populate_users_table.sql");
-
+    public static PostgreSQLContainer<PostgreDB1ContainerBase> postgresDB1Container = PostgreDB1ContainerBase.getInstance();
     @ClassRule
-    public static PostgreSQLContainer postgres2 = (PostgreSQLContainer) new PostgreSQLContainer("postgres:11.1")
-            .withDatabaseName("data-base-2")
-            .withUsername("sa")
-            .withPassword("sa")
-            .withInitScript("dbscripts/create_and_populate_user_data_table.sql");
+    public static PostgreSQLContainer<PostgreDB2ContainerBase> postgresDB2Container = PostgreDB2ContainerBase.getInstance();
 
     @BeforeAll
     static void beforeAll() {
-        postgres.start();
-        postgres2.start();
-        System.setProperty("DB_URL", postgres.getJdbcUrl());
-        System.setProperty("DB2_URL", postgres2.getJdbcUrl());
+        postgresDB1Container.start();
+        postgresDB2Container.start();
     }
 
     @AfterAll
     static void afterAll() {
-        postgres.stop();
-        postgres2.stop();
+        postgresDB1Container.stop();
+        postgresDB2Container.stop();
     }
 
     @BeforeEach
@@ -74,17 +65,17 @@ class ComparusTestTaskApplicationTests {
     @Test
     void shouldGetUsersByName() {
         String name = "Artem";
-        User[] users = given()
+        UserDTO[] users = given()
                 .contentType(ContentType.JSON)
                 .when()
                 .get("/v1/users?name=" + name)
                 .then()
                 .statusCode(200)
                 .extract()
-                .as(User[].class);
+                .as(UserDTO[].class);
+        List<UserDTO> userList = Arrays.asList(users);
 
-        Assertions.assertEquals(2, users.length);
-        List<User> userList = Arrays.asList(users);
+        Assertions.assertEquals(2, userList.size());
         userList.forEach(user -> {
             Assertions.assertEquals(name, user.getName());
         });
